@@ -5,7 +5,7 @@ import 'package:agent_frontend/models/intake.dart';
 
 // Configure at build time: pass --dart-define=BASE_URL=http://<your-mac-ip>:8000 for real iPhone
 const kBaseUrl = String.fromEnvironment('BASE_URL',
-    defaultValue: 'http://10.200.61.198:8000');
+    defaultValue: 'http://10.200.0.223:8000');
 
 class ApiService {
   final Dio _dio;

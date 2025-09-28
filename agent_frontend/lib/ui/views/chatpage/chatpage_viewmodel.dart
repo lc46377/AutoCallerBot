@@ -136,18 +136,25 @@ class ChatpageViewModel extends BaseViewModel {
 
   Future<void> hangup() async {
     if (_sessionId == null) return;
+
+    bool apiSuccess = false;
+
     try {
       await _api.hangupBySession(_sessionId!);
-      callId = null;
-      messages.add(ChatMessage('Call ended.', fromUser: false));
-      notifyListeners();
-      _scrollToEnd();
+      apiSuccess = true;
     } catch (e) {
       messages.add(ChatMessage('Could not end the call. You can try again.',
           fromUser: false));
-      notifyListeners();
     } finally {
+      callId = null;
+
+      final successMessage =
+          apiSuccess ? 'Call ended.' : 'Call ended, summary retrieving.';
+
+      messages.add(ChatMessage(successMessage, fromUser: false));
       _stopPolling();
+      notifyListeners();
+      _scrollToEnd();
     }
   }
 
