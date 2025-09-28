@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 class IntakeStartResponse {
-  String sessionId;
-  List<String> nextFields;
-  String question;
-  String? callId;
+  final String sessionId;
+  final List<String> nextFields;
+  final String question;
+  final String? callId;
 
   IntakeStartResponse({
     required this.sessionId,
@@ -11,63 +13,50 @@ class IntakeStartResponse {
     this.callId,
   });
 
-  factory IntakeStartResponse.fromJson(Map<String, dynamic> json) {
+  factory IntakeStartResponse.fromJson(Map<String, dynamic> j) {
     return IntakeStartResponse(
-      sessionId: json['sessionId'] as String? ?? '',
-      nextFields: (json['nextFields'] as List<dynamic>? ?? const [])
-          .map((e) => e.toString())
-          .toList(),
-      question: json['question'] as String? ?? '',
-      callId: json['callId'] as String?,
+      sessionId: j['session_id'] ?? '',
+      nextFields:
+          (j['next_fields'] as List?)?.map((e) => e.toString()).toList() ?? const [],
+      question: j['question']?.toString() ?? '',
+      callId: j['call_id']?.toString(),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'sessionId': sessionId,
-      'nextFields': nextFields,
-      'question': question,
-      'callId': callId,
-    };
   }
 }
 
 class IntakeReplyResponse {
-  bool done;
-  String? message;
-  String? callId;
-  List<String> nextFields;
-  String question;
+  final bool done;
+  final String? message;
+  final String? callId;
+  final List<String> nextFields;
+  final String? question;
 
   IntakeReplyResponse({
     required this.done,
     this.message,
     this.callId,
-    required this.nextFields,
-    required this.question,
+    this.nextFields = const [],
+    this.question,
   });
 
-  factory IntakeReplyResponse.fromJson(Map<String, dynamic> json) {
+  factory IntakeReplyResponse.fromJson(Map<String, dynamic> j) {
     return IntakeReplyResponse(
-      done: json['done'] as bool? ?? false,
-      message: json['message'] as String?,
-      callId: json['callId'] as String?,
-      nextFields: (json['nextFields'] as List<dynamic>? ?? const [])
-          .map((e) => e.toString())
-          .toList(),
-      question: json['question'] as String? ?? '',
+      done: j['done'] == true,
+      message: j['message']?.toString(),
+      callId: j['call_id']?.toString(),
+      nextFields:
+          (j['next_fields'] as List?)?.map((e) => e.toString()).toList() ?? const [],
+      question: j['question']?.toString(),
     );
   }
+}
 
-  Map<String, dynamic> toJson() {
-    return {
-      'done': done,
-      'message': message,
-      'callId': callId,
-      'nextFields': nextFields,
-      'question': question,
-    };
-  }
+class ApiException implements Exception {
+  final String message;
+  final int? status;
+  ApiException(this.message, {this.status});
+  @override
+  String toString() => 'ApiException($status): $message';
 }
 
 

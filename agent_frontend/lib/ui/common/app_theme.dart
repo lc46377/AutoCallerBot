@@ -47,3 +47,9 @@ BoxDecoration gradientBackground(BuildContext context) {
 }
 
 
+// Alias to support newer call sites
+BoxDecoration gradientBg(BuildContext context) {
+  return gradientBackground(context);
+}
+
+

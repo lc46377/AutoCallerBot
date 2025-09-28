@@ -15,10 +15,14 @@ class HomepageView extends StackedView<HomepageViewModel> {
     Widget? child,
   ) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Fetch')),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Fetch'),
+      ),
       body: Container(
-        decoration: gradientBackground(context),
+        decoration: gradientBg(context),
         child: RefreshIndicator(
+          color: Theme.of(context).colorScheme.primary,
           onRefresh: viewModel.refresh,
           child: viewModel.isBusy
               ? const Center(child: CircularProgressIndicator())
@@ -66,13 +70,11 @@ class HomepageView extends StackedView<HomepageViewModel> {
                     )),
         ),
       ),
-      floatingActionButton: Hero(
-        tag: 'fab-new-task',
-        child: FloatingActionButton.extended(
-          onPressed: viewModel.startNewTask,
-          icon: const Icon(Icons.add_comment_rounded),
-          label: const Text('New Task'),
-        ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab-new-task',
+        onPressed: viewModel.startNewTask,
+        icon: const Icon(Icons.add_comment_rounded),
+        label: const Text('New Task'),
       ),
     );
   }

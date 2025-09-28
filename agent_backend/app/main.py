@@ -64,6 +64,13 @@ def intake_reply(body: ReplyBody):
         raise HTTPException(404, "Unknown session_id")
     d = sess.data
 
+    extracted = extract_fields(body.answer or "")
+    print("=== EXTRACTED FROM ANSWER ===", extracted)
+
+    # OVERWRITE merge: always write non-empty values
+    for k, v in (extracted or {}).items():
+        if v not in (None, "", []):
+            d[k] = v   # <— overwrite instead of setdefault
     # Extract multiple fields from a single reply
     _merge(d, extract_fields(body.answer), overwrite=True)
 
