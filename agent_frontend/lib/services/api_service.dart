@@ -16,7 +16,7 @@ class ApiService {
               BaseOptions(
                 baseUrl: kBaseUrl,
                 connectTimeout: const Duration(seconds: 5),
-                receiveTimeout: const Duration(seconds: 15),
+                receiveTimeout: const Duration(seconds: 60),
                 headers: {'Content-Type': 'application/json'},
               ),
             ) {
@@ -91,6 +91,27 @@ class ApiService {
     } on DioException catch (e) {
       throw ApiException(e.message ?? 'Hangup failed',
           status: e.response?.statusCode);
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> pollEvents(String sessionId) async {
+    try {
+      final r = await _dio.get('/events/poll', queryParameters: {
+        'session_id': sessionId,
+      });
+      final data =
+          r.data is Map<String, dynamic> ? r.data : <String, dynamic>{};
+      final list = (data['events'] as List?) ?? const [];
+      final events = list
+          .cast<Map>()
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+      print('[ApiService] polled ${events.length} event(s) for $sessionId');
+      return events;
+    } on DioException catch (e) {
+      // Don’t throw on poll errors; just return empty so UI keeps going
+      print('[ApiService] pollEvents error: ${e.message}');
+      return const [];
     }
   }
 }

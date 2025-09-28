@@ -5,7 +5,7 @@ from .config import USER_NAME, DEFAULT_USER_PHONE
 
 # Simple vendor → phone mapping (extend as needed)
 VENDOR_MAP = {
-    "walmart": "+16674190027",
+    "walmart": "+18009256278",
     # "enterprise": "...",
     # "marriott": "...",
 }

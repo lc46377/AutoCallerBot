@@ -36,8 +36,10 @@ class ReplyBody(BaseModel):
     answer: str
 
 class SessionState(BaseModel):
-    data: Dict[str, Any] = {}
+    data: Dict[str, Any] = Field(default_factory=dict)
     call_id: Optional[str] = None
     expected_fields: List[str] = []
     intent: Optional[str] = None
     ask_counts: Dict[str, int] = Field(default_factory=dict)  # track field prompts
+    intent: Optional[str] = None
+    outbox: List[Dict[str, Any]] = Field(default_factory=list)

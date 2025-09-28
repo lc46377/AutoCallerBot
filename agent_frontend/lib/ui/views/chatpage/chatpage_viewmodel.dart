@@ -1,6 +1,7 @@
+// lib/ui/views/chatpage/chatpage_viewmodel.dart
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-
 import '../../../app/app.locator.dart';
 import '../../../services/api_service.dart';
 import '../../../models/intake.dart';
@@ -9,7 +10,6 @@ class ChatMessage {
   final String text;
   final bool fromUser;
   final DateTime ts;
-
   ChatMessage(this.text, {required this.fromUser, DateTime? ts})
       : ts = ts ?? DateTime.now();
 }
@@ -23,10 +23,14 @@ class ChatpageViewModel extends BaseViewModel {
   final List<ChatMessage> messages = [];
   String? _sessionId;
   String? callId;
-  bool typing = false; // show "assistant is typing"
+  bool typing = false;
+
+  Timer? _pollTimer;
 
   bool get hasActiveCall => callId != null;
-  bool get isCollecting => _sessionId != null && !hasActiveCall;
+
+  bool get isCollecting =>
+      _sessionId != null && !hasActiveCall && !typing && !isBusy;
 
   void _scrollToEnd() {
     Future.delayed(const Duration(milliseconds: 50), () {
@@ -39,11 +43,43 @@ class ChatpageViewModel extends BaseViewModel {
     });
   }
 
+  void _startPolling() {
+    _pollTimer?.cancel();
+    if (_sessionId == null) return;
+    _pollTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+      try {
+        final events = await _api.pollEvents(_sessionId!);
+        if (events.isEmpty) return;
+        for (final e in events) {
+          final type = e['type']?.toString() ?? '';
+          final text = e['text']?.toString() ?? '';
+          if (text.isEmpty) continue;
+
+          // Show all events as assistant bubbles
+          messages.add(ChatMessage(text, fromUser: false));
+
+          // If server says call ended, clear local flag
+          if (type == 'status' && text.toLowerCase().contains('call ended')) {
+            callId = null;
+          }
+        }
+        notifyListeners();
+        _scrollToEnd();
+      } catch (_) {
+        // ignore polling errors
+      }
+    });
+  }
+
+  void _stopPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+  }
+
   Future<void> send() async {
     final input = inputController.text.trim();
     if (input.isEmpty || isBusy) return;
 
-    // push user bubble
     messages.add(ChatMessage(input, fromUser: true));
     inputController.clear();
     notifyListeners();
@@ -58,18 +94,17 @@ class ChatpageViewModel extends BaseViewModel {
         final IntakeStartResponse start = await _api.intakeStart(input);
         _sessionId = start.sessionId;
 
-        // assistant reply
         if (start.callId != null && start.callId!.isNotEmpty) {
           callId = start.callId;
           messages.add(ChatMessage(
               'Calling the company now… (Call ID: $callId)',
               fromUser: false));
+          _startPolling(); // start listening for summary/status
         } else if (start.question.isNotEmpty) {
           messages.add(ChatMessage(start.question, fromUser: false));
         }
       } else {
-        final IntakeReplyResponse rep =
-            await _api.intakeReply(_sessionId!, input);
+        final rep = await _api.intakeReply(_sessionId!, input);
 
         if (rep.done) {
           if (rep.callId != null && rep.callId!.isNotEmpty) {
@@ -78,11 +113,11 @@ class ChatpageViewModel extends BaseViewModel {
                 ? rep.message!
                 : 'Calling the company now… (Call ID: $callId)';
             messages.add(ChatMessage(text, fromUser: false));
+            _startPolling(); // start listening for summary/status
           } else {
             messages.add(ChatMessage(rep.message ?? 'Done.', fromUser: false));
           }
         } else {
-          // still collecting info
           messages.add(ChatMessage(
               rep.question ?? 'Please provide the remaining details.',
               fromUser: false));
@@ -105,15 +140,14 @@ class ChatpageViewModel extends BaseViewModel {
       await _api.hangupBySession(_sessionId!);
       callId = null;
       messages.add(ChatMessage('Call ended.', fromUser: false));
-      // allow starting a brand-new flow without leaving the screen
-      _sessionId = null;
-      typing = false;
       notifyListeners();
       _scrollToEnd();
     } catch (e) {
       messages.add(ChatMessage('Could not end the call. You can try again.',
           fromUser: false));
       notifyListeners();
+    } finally {
+      _stopPolling();
     }
   }
 
@@ -121,6 +155,7 @@ class ChatpageViewModel extends BaseViewModel {
   void dispose() {
     inputController.dispose();
     scrollController.dispose();
+    _stopPolling();
     super.dispose();
   }
 }
