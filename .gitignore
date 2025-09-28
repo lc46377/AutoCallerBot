@@ -1,0 +1,134 @@
+# ---- OS / Editors ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Icon?
+*.swp
+*.swo
+*.orig
+*.tmp
+*.log
+!.gitkeep
+.vscode/
+.idea/
+
+# ---- Top-level artifacts -----------------------------------------------------
+*.env
+.env*
+*.secret
+*.pem
+*.key
+*.keystore
+*.jks
+
+# Common build/output
+build/
+dist/
+coverage/
+htmlcov/
+*.coverage
+*.lcov
+*.prof
+
+# Call/debug logs (adjust if you want to keep them)
+*call-logs*.json
+*call-logs*.csv
+logs/
+**/session_logs/
+**/call_logs/
+
+# ============================================================================ #
+# agent_backend (FastAPI / Python)                                                   #
+# ============================================================================ #
+
+/agent_backend/__pycache__/
+/agent_backend/**/*.pyc
+/agent_backend/**/*.pyo
+/agent_backend/.pytest_cache/
+/agent_backend/.mypy_cache/
+/agent_backend/.ruff_cache/
+/agent_backend/.tox/
+/agent_backend/.coverage
+/agent_backend/coverage.xml
+/agent_backend/.cache/
+/agent_backend/.benchmarks/
+/agent_backend/.ipynb_checkpoints/
+/agent_backend/.python-version
+
+# virtualenvs
+/agent_backend/.venv/
+/agent_backend/venv/
+/agent_backend/env/
+
+# local env & secrets
+/agent_backend/.env
+/agent_backend/.env.*
+/agent_backend/*.pem
+/agent_backend/*.key
+
+# tool state
+/agent_backend/.DS_Store
+/agent_backend/.vscode/
+/agent_backend/.idea/
+
+# build/output
+/agent_backend/build/
+/agent_backend/dist/
+/agent_backend/*.egg-info/
+/agent_backend/*.sqlite3
+
+# ============================================================================ #
+# agent_frontend (Flutter)                                                            #
+# ============================================================================ #
+
+# Flutter/Dart
+/agent_frontend/.dart_tool/
+/agent_frontend/.packages
+/agent_frontend/.pub-cache/
+/agent_frontend/.pub/
+/agent_frontend/build/
+/agent_frontend/flutter_export_environment.sh
+/agent_frontend/.flutter-plugins
+/agent_frontend/.flutter-plugins-dependencies
+
+# Android
+/agent_frontend/android/.gradle/
+/agent_frontend/android/captures/
+/agent_frontend/android/local.properties
+/agent_frontend/android/**/GeneratedPluginRegistrant.java
+/agent_frontend/android/**/GeneratedPluginRegistrant.kt
+/agent_frontend/android/**/gradle-wrapper.jar
+/agent_frontend/android/gradle/
+/agent_frontend/android/app/release/
+/agent_frontend/android/app/debug/
+/agent_frontend/android/app/profile/
+
+# iOS
+/agent_frontend/ios/Flutter/.last_build_id
+/agent_frontend/ios/Flutter/ephemeral/
+/agent_frontend/ios/.symlinks/
+/agent_frontend/ios/Pods/
+/agent_frontend/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS
+/agent_frontend/macos/Flutter/ephemeral/
+/agent_frontend/macos/.symlinks/
+/agent_frontend/macos/Pods/
+/agent_frontend/macos/Runner/GeneratedPluginRegistrant.swift
+
+# Windows
+/agent_frontend/windows/flutter/ephemeral/
+
+# Linux
+/agent_frontend/linux/flutter/ephemeral/
+
+# Web
+/agent_frontend/web/.dart_tool/
+
+# Signing / sensitive (uncomment if you don't want them in git)
+# /agent_frontend/android/app/google-services.json
+# /agent_frontend/ios/Runner/GoogleService-Info.plist
+
+# Editor/OS in agent_frontend too
+/agent_frontend/.vscode/
+/agent_frontend/.idea/
+/agent_frontend/.DS_Store
