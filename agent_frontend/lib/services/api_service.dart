@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:agent_frontend/models/call_log.dart';
 import 'package:agent_frontend/models/intake.dart';
 
-// Configure at build time: pass --dart-define=BASE_URL=http://<your-mac-ip>:8000 for real iPhone
 const kBaseUrl = String.fromEnvironment('BASE_URL',
     defaultValue: 'http://10.200.0.223:8000');
 
@@ -34,10 +33,11 @@ class ApiService {
 
   // Mocked locally; not part of FastAPI spec but used by homepage
   Future<List<CallLog>> fetchCallLogs() async {
+    await Future.delayed(const Duration(seconds: 45));
     return [
       CallLog(
         title: 'Walmart: Replacement started',
-        subtitle: 'Headphones • Ticket #RMA-2311',
+        subtitle: 'Mat • Ticket #RMA-2311',
         time: DateTime.now().subtract(const Duration(hours: 2)),
         success: true,
       ),

@@ -17,7 +17,7 @@ class HomepageView extends StackedView<HomepageViewModel> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Fetch'),
+        title: const Text('Welcome to CussBot!'),
       ),
       body: Container(
         decoration: gradientBg(context),
