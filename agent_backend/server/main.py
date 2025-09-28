@@ -34,7 +34,7 @@
 #     )
 
 import os, re, uuid
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, List, Optional
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from dotenv import load_dotenv

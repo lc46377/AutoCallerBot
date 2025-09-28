@@ -26,7 +26,9 @@ class ChatpageView extends StackedView<ChatpageViewModel> {
                 itemCount: viewModel.messages.length,
                 itemBuilder: (context, index) {
                   final msg = viewModel.messages[index];
-                  final align = msg.fromUser ? Alignment.centerRight : Alignment.centerLeft;
+                  final align = msg.fromUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft;
                   final bubbleColor = msg.fromUser
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.surface;
@@ -37,7 +39,8 @@ class ChatpageView extends StackedView<ChatpageViewModel> {
                     alignment: align,
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 10),
                       constraints: const BoxConstraints(maxWidth: 480),
                       decoration: BoxDecoration(
                         color: bubbleColor,
@@ -69,7 +72,8 @@ class ChatpageView extends StackedView<ChatpageViewModel> {
                 color: Colors.transparent,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Wrap(
                     alignment: WrapAlignment.center,
                     crossAxisAlignment: WrapCrossAlignment.center,
@@ -100,8 +104,10 @@ class ChatpageView extends StackedView<ChatpageViewModel> {
                         maxLines: 4,
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => viewModel.send(),
-                        decoration: const InputDecoration(
-                          hintText: 'Describe what you need…',
+                        decoration: InputDecoration(
+                          hintText: viewModel.isCollecting
+                              ? 'Answer here… (you can include multiple details)'
+                              : 'Describe what you need…',
                         ),
                       ),
                     ),

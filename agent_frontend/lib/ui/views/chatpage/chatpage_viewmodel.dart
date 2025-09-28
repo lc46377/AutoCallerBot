@@ -26,6 +26,7 @@ class ChatpageViewModel extends BaseViewModel {
   bool typing = false; // show "assistant is typing"
 
   bool get hasActiveCall => callId != null;
+  bool get isCollecting => _sessionId != null && !hasActiveCall;
 
   void _scrollToEnd() {
     Future.delayed(const Duration(milliseconds: 50), () {
@@ -60,12 +61,15 @@ class ChatpageViewModel extends BaseViewModel {
         // assistant reply
         if (start.callId != null && start.callId!.isNotEmpty) {
           callId = start.callId;
-          messages.add(ChatMessage('Calling the company now… (Call ID: $callId)', fromUser: false));
+          messages.add(ChatMessage(
+              'Calling the company now… (Call ID: $callId)',
+              fromUser: false));
         } else if (start.question.isNotEmpty) {
           messages.add(ChatMessage(start.question, fromUser: false));
         }
       } else {
-        final IntakeReplyResponse rep = await _api.intakeReply(_sessionId!, input);
+        final IntakeReplyResponse rep =
+            await _api.intakeReply(_sessionId!, input);
 
         if (rep.done) {
           if (rep.callId != null && rep.callId!.isNotEmpty) {
@@ -79,11 +83,14 @@ class ChatpageViewModel extends BaseViewModel {
           }
         } else {
           // still collecting info
-          messages.add(ChatMessage(rep.question ?? 'Please provide the remaining details.', fromUser: false));
+          messages.add(ChatMessage(
+              rep.question ?? 'Please provide the remaining details.',
+              fromUser: false));
         }
       }
     } catch (e) {
-      messages.add(ChatMessage('Sorry, something went wrong. Please try again.', fromUser: false));
+      messages.add(ChatMessage('Sorry, something went wrong. Please try again.',
+          fromUser: false));
     } finally {
       typing = false;
       setBusy(false);
@@ -98,10 +105,14 @@ class ChatpageViewModel extends BaseViewModel {
       await _api.hangupBySession(_sessionId!);
       callId = null;
       messages.add(ChatMessage('Call ended.', fromUser: false));
+      // allow starting a brand-new flow without leaving the screen
+      _sessionId = null;
+      typing = false;
       notifyListeners();
       _scrollToEnd();
     } catch (e) {
-      messages.add(ChatMessage('Could not end the call. You can try again.', fromUser: false));
+      messages.add(ChatMessage('Could not end the call. You can try again.',
+          fromUser: false));
       notifyListeners();
     }
   }
