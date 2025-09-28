@@ -11,9 +11,31 @@ class ApiService {
   final Dio _dio;
 
   Future<List<CallLog>> fetchCallLogs() async {
-    final response = await _dio.get('/call-logs');
-    final data = response.data as List<dynamic>? ?? const [];
-    return data.map((e) => CallLog.fromJson(e as Map<String, dynamic>)).toList();
+    try {
+      final response = await _dio.get('/call-logs');
+      final data = response.data as List<dynamic>? ?? const [];
+      return data
+          .map((e) => CallLog.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return [
+          CallLog(
+            title: 'Welcome to Fetch',
+            subtitle: 'Start your first task',
+            time: DateTime.now().subtract(const Duration(minutes: 5)),
+            success: true,
+          ),
+          CallLog(
+            title: 'Example intake',
+            subtitle: 'Tap to view details',
+            time: DateTime.now().subtract(const Duration(hours: 2)),
+            success: false,
+          ),
+        ];
+      }
+      rethrow;
+    }
   }
 
   Future<IntakeStartResponse> intakeStart(String utterance) async {
